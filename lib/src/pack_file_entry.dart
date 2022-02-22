@@ -1,3 +1,5 @@
+const _separator = ':';
+
 /// A class which stores the offset of a file with the given [filename].
 class PackFileEntry {
   /// Create an instance.
@@ -14,6 +16,18 @@ class PackFileEntry {
     required int length,
   }) : end = start + length;
 
+  /// Return an instance loaded from the given [string].
+  factory PackFileEntry.fromString(String string) {
+    final items = string.split(_separator);
+    if (items.length != 3) {
+      throw StateError('Invalid header: $items loaded from $string.');
+    }
+    final filename = items.first;
+    final start = int.parse(items[1]);
+    final end = int.parse(items.last);
+    return PackFileEntry(filename: filename, start: start, end: end);
+  }
+
   /// The name of the entry.
   final String filename;
 
@@ -28,4 +42,7 @@ class PackFileEntry {
 
   /// Returns the length of the data.
   int get length => end - start;
+
+  /// Return the header string for this entry.
+  String get header => '$filename$_separator$start$_separator$end';
 }
